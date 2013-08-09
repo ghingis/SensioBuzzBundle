@@ -1,0 +1,88 @@
+{% extends 'WebProfilerBundle:Profiler:layout.html.twig' %}
+
+{% block toolbar %}
+    {% set number = 0 %}
+    {% set all_time = 0 %}
+    {% for listener in collector.getCalled %}
+        {% set number = number + 1 %}
+        {% set all_time = all_time + listener.time %}
+    {% endfor %}
+    <div class="sf-toolbar-block">
+        {% set icon %}
+            <img width="28" height="28" alt="Request" src="{{ asset('bundles/webprofiler/images/profiler/events.png') }}">
+            <span class="sf-toolbar-status">{{ number }}</span>
+            <span>Called Urls</span>
+        {% endset %}
+
+        {% set text %}
+            <div class="sf-toolbar-info-piece">
+                <b>Called urls: </b>
+                <span>{{ number }}</span>
+            </div>
+            <div class="sf-toolbar-info-piece">
+                <b>All time: </b>
+                <span>{{ all_time|number_format(1, '.', ' ') }} ms</span>
+            </div>
+        {% endset %}
+    </div>
+    {% include 'WebProfilerBundle:Profiler:toolbar_item.html.twig' with { 'link': profiler_url } %}
+    {# the web debug toolbar content #}
+{% endblock %}
+
+{% block menu %}
+    {% set number = 0 %}
+    {% set all_time = 0 %}
+    {% for listener in collector.getCalled %}
+        {% set number = number + 1 %}
+        {% set all_time = all_time + listener.time %}
+    {% endfor %}
+    <span class="label">
+    <span class="icon"><img src="{{ asset('bundles/webprofiler/images/profiler/events.png') }}" alt="Called Urls" /></span>
+    <strong>Called Urls</strong>
+    <span class="count">
+        <span>{{ number }}</span>
+        {% if all_time > 1000 %}
+            <span>~{{ (all_time/1000)|number_format(1, '.', ' ')}} s</span>
+        {% else %}
+            <span>{{ all_time|number_format(1, '.', ' ') }} ms</span>
+        {% endif %}
+    </span>
+</span>
+{% endblock %}
+
+{% block panel %}
+    {% set number = 0 %}
+    {% set all_time = 0 %}
+    {% for listener in collector.getCalled %}
+        {% set number = number + 1 %}
+        {% set all_time = all_time + listener.time %}
+    {% endfor %}
+    <h2>Called Urls</h2>
+
+    <table>
+        <tr>
+            <th>Url</th>
+            <th>Method</th>
+            <th>Running time</th>
+            <th>Headers</th>
+            <th>Content</th>
+        </tr>
+        {% for listener in collector.getCalled %}
+            <tr>
+                <td><code>{{ listener.url }}</code></td>
+                <td><code>{{ listener.method }}</code></td>
+                <td><code>{{ listener.time|number_format(1, '.', ' ') }} ms</code></td>
+                <td>
+                    <code>
+                        (
+                        {% for key, value in listener.headers %}
+                            {{ key }} => {{ value }},
+                        {% endfor %}
+                        )
+                    </code>
+                </td>
+                <td><code>{{ listener.content }}</code></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

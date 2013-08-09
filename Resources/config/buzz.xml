@@ -7,7 +7,8 @@
     <parameters>
         <parameter key="buzz.client.class">Buzz\Client\Curl</parameter>
         <parameter key="buzz.message_factory.class">Buzz\Message\Factory\Factory</parameter>
-        <parameter key="buzz.browser.class">Buzz\Browser</parameter>
+        <parameter key="buzz.browser.class">Sensio\Bundle\BuzzBundle\Buzz\Browser</parameter>
+        <parameter key="buzz.collector.class">Sensio\Bundle\BuzzBundle\DataCollector\NetworkIoCollector</parameter>
     </parameters>
 
     <services>
@@ -17,10 +18,17 @@
                 <argument>%buzz.client.timeout%</argument>
             </call>
         </service>
-
+        
         <service id="buzz" class="%buzz.browser.class%">
           <argument type="service" id="buzz.client" />
           <argument type="service" id="buzz.message_factory" />
+          <argument type="service" id="debug.stopwatch" />
+        </service>
+        <service id="buzz.data_collector.network_io" class="%buzz.collector.class%">
+            <call method="setNetworkIoService">
+                <argument type="service" id="buzz" />
+            </call>
+            <tag name="data_collector" template="SensioBuzzBundle:Collector:network_io_collector.html.twig" id="network_io"/>
         </service>
     </services>
 </container>
